@@ -2,15 +2,20 @@
 
 ## Title: |cff3abdf7Peavers|rAlwaysSquare
 ## Notes: Automatically sets the tank's raid icon as a square when in a party
-## IconTexture: Interface\AddOns\PeaversAlwaysSquare\src\Media\Icon.tga
+## IconTexture: Interface\AddOns\PeaversCommons\src\Media\Icon.tga
 
 ## Author: Peavers
 ## Version: 1.0.5
 ## X-Curse-Project-ID: 1235674
 
+## Dependencies: PeaversCommons
+
+## SavedVariables: PeaversAlwaysSquareDB
+
 ## Category-enUS: Peavers
 
 # Utils
+src\Utils\Config.lua
 src\Utils\ConfigUI.lua
 src\Utils\SupportUI.lua
 
