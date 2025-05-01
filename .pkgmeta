@@ -3,9 +3,6 @@ package-as: PeaversAlwaysSquare
 externals:
   PeaversCommons: https://github.com/peavers/PeaversCommons
 
-embedded-libraries:
-  - PeaversCommons
-
 ignore:
   - .git
   - .github
