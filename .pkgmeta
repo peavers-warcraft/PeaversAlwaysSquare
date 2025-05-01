@@ -3,9 +3,10 @@ package-as: PeaversAlwaysSquare
 externals:
   PeaversCommons: https://github.com/peavers/PeaversCommons
 
+move-folders:
+  PeaversAlwaysSquare/PeaversCommons: PeaversCommons
+
 ignore:
-  - .*.sh
-  - .*.ps1
   - .git
   - .github
   - .gitignore
