@@ -15,3 +15,5 @@ ignore:
   - README.md
   - CHANGELOG.md
   - LICENSE
+  - local_deploy.sh
+  - local_deploy.ps1
