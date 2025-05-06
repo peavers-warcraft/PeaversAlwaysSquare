@@ -1,10 +1,7 @@
 package-as: PeaversAlwaysSquare
 
-externals:
-  PeaversCommons: https://github.com/peavers/PeaversCommons
-
-move-folders:
-  PeaversAlwaysSquare/PeaversCommons: PeaversCommons
+required-dependencies:
+  - peaverscommons
 
 ignore:
   - .git
