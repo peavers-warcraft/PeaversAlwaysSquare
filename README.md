@@ -2,6 +2,9 @@
 
 **A World of Warcraft addon that automatically and persistently marks tanks with a square icon, because tanks need squares on their heads, not stars in their eyes.**
 
+### New!
+Check out [peavers.io](https://peavers.io) and [bootstrap.peavers.io](https://bootstrap.peavers.io) for all my WoW addons and support.
+
 ## Overview
 
 PeaversAlwaysSquare solves the age-old problem of inconsistent raid markers by relentlessly marking your group's tank with a square icon. If someone dares to change it, the addon will immediately change it back, with unwavering dedication to proper dungeon etiquette.
