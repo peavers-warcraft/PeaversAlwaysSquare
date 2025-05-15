@@ -7,7 +7,7 @@ local defaults = {
     enabled = true,
     debugMode = false,
     iconId = 6, -- Square
-    checkFrequency = 1.0,
+    checkFrequency = 0.2,
     DEBUG_ENABLED = false
 }
 
@@ -15,19 +15,19 @@ local defaults = {
 function Config:Initialize()
     -- Load saved variables
     PeaversAlwaysSquareDB = PeaversAlwaysSquareDB or {}
-    
+
     -- Merge with defaults
     for k, v in pairs(defaults) do
         if PeaversAlwaysSquareDB[k] == nil then
             PeaversAlwaysSquareDB[k] = v
         end
     end
-    
+
     -- Copy to the current config
     for k, v in pairs(PeaversAlwaysSquareDB) do
         self[k] = v
     end
-    
+
     return self
 end
 

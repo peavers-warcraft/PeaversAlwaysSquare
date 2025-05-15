@@ -15,33 +15,95 @@ local iconNames = {
 	[5] = "Moon", [6] = "Square", [7] = "Cross", [8] = "Skull"
 }
 
--- Function to find and mark the tank
-function MarkTank()
+-- Track last mark time to prevent spam
+local lastMarkTime = 0
+local markCooldown = 0.1 -- Allow marking every 0.1 seconds
+local cachedTankUnit = nil -- Cache the tank unit for faster checks
+
+-- Function to find the tank unit
+local function FindTankUnit()
+	if not IsInGroup() then
+		return nil
+	end
+
+	local numMembers = GetNumGroupMembers()
+	local tanks = {}
+
+	-- Collect all tanks first
+	for i = 1, numMembers do
+		local unit = i < numMembers and "party" .. i or "player"
+		if UnitExists(unit) and UnitGroupRolesAssigned(unit) == "TANK" then
+			table.insert(tanks, unit)
+		end
+	end
+
+	-- If only one tank, return it
+	if #tanks == 1 then
+		cachedTankUnit = tanks[1]
+		return tanks[1]
+	elseif #tanks > 1 then
+		-- If multiple tanks, prefer the one already marked with square
+		for _, unit in ipairs(tanks) do
+			if GetRaidTargetIndex(unit) == PAS.Config.iconId then
+				cachedTankUnit = unit
+				return unit
+			end
+		end
+		-- Otherwise return the first tank
+		cachedTankUnit = tanks[1]
+		return tanks[1]
+	end
+
+	cachedTankUnit = nil
+	return nil
+end
+
+-- Function to find and mark the tank with immediate retries
+function MarkTank(force)
 	if not IsInGroup() then
 		Utils.Debug(PAS, "Not in group")
+		cachedTankUnit = nil
 		return
 	end
 
 	if IsInRaid() then
 		Utils.Debug(PAS, "In raid - disabled")
+		cachedTankUnit = nil
 		return
 	end
 
-	local numMembers = GetNumGroupMembers()
-	for i = 1, numMembers do
-		local unit = i < numMembers and "party" .. i or "player"
-		if UnitGroupRolesAssigned(unit) == "TANK" then
-			local name = UnitName(unit)
-			local currentMark = GetRaidTargetIndex(unit)
-			if currentMark ~= PAS.Config.iconId then
-				SetRaidTarget(unit, PAS.Config.iconId)
-				Utils.Debug(PAS, "Marked " .. name .. " with " .. iconNames[PAS.Config.iconId])
-			end
+	-- Respect cooldown unless forced
+	local currentTime = GetTime()
+	if not force and (currentTime - lastMarkTime) < markCooldown then
+		return
+	end
+
+	-- Use cached tank unit if valid, otherwise find it
+	local tankUnit = cachedTankUnit
+	if not tankUnit or not UnitExists(tankUnit) or UnitGroupRolesAssigned(tankUnit) ~= "TANK" then
+		tankUnit = FindTankUnit()
+		if not tankUnit then
+			Utils.Debug(PAS, "No tank found")
 			return
 		end
 	end
 
-	Utils.Debug(PAS, "No tank found")
+	local name = UnitName(tankUnit)
+	local currentMark = GetRaidTargetIndex(tankUnit)
+
+	-- Always try to set the mark if it's different
+	if currentMark ~= PAS.Config.iconId then
+		SetRaidTarget(tankUnit, PAS.Config.iconId)
+		lastMarkTime = currentTime
+		Utils.Debug(PAS, "Marked " .. name .. " with " .. iconNames[PAS.Config.iconId])
+
+		-- Schedule a verification check
+		C_Timer.After(0.1, function()
+			if UnitExists(tankUnit) and GetRaidTargetIndex(tankUnit) ~= PAS.Config.iconId then
+				MarkTank(true) -- Force immediate retry
+			end
+		end)
+	end
 end
 
 -- Make the function globally accessible
@@ -87,13 +149,12 @@ PeaversCommons.Events:Init(addonName, function()
 	if PAS.ConfigUI and PAS.ConfigUI.Initialize then
 		PAS.ConfigUI:Initialize()
 	end
-	
+
 	-- Initialize patrons support
 	if PAS.Patrons and PAS.Patrons.Initialize then
 		PAS.Patrons:Initialize()
 	end
 
-	-- Register events
 	PeaversCommons.Events:RegisterEvent("GROUP_ROSTER_UPDATE", function()
 		MarkTank()
 	end)
@@ -106,7 +167,23 @@ PeaversCommons.Events:Init(addonName, function()
 		MarkTank()
 	end)
 
-	-- Set up periodic checking
+	PeaversCommons.Events:RegisterEvent("ROLE_CHANGED_INFORM", function()
+		MarkTank()
+	end)
+
+	-- Register for raid target icon changes with immediate response
+	PeaversCommons.Events:RegisterEvent("RAID_TARGET_UPDATE", function()
+		-- Clear the cache to force a fresh check
+		cachedTankUnit = nil
+		-- Force immediate check when someone changes a raid target
+		MarkTank(true)
+		-- Schedule another check slightly later to catch any rapid changes
+		C_Timer.After(0.05, function()
+			MarkTank(true)
+		end)
+	end)
+
+	-- Set up periodic checking with more aggressive frequency
 	PeaversCommons.Events:RegisterOnUpdate(PAS.Config.checkFrequency, function()
 		if PAS.Config.enabled then
 			MarkTank()
