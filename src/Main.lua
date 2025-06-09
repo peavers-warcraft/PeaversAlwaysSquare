@@ -17,8 +17,10 @@ local iconNames = {
 
 -- Track last mark time to prevent spam
 local lastMarkTime = 0
-local markCooldown = 0.1 -- Allow marking every 0.1 seconds
+local markCooldown = 0 -- No cooldown for instant response
 local cachedTankUnit = nil -- Cache the tank unit for faster checks
+local rapidCheckTimer = nil -- Timer for rapid checking when mark is wrong
+local isRapidChecking = false -- Flag to indicate rapid checking mode
 
 -- Function to find the tank unit
 local function FindTankUnit()
@@ -97,12 +99,40 @@ function MarkTank(force)
 		lastMarkTime = currentTime
 		Utils.Debug(PAS, "Marked " .. name .. " with " .. iconNames[PAS.Config.iconId])
 
-		-- Schedule a verification check
-		C_Timer.After(0.1, function()
-			if UnitExists(tankUnit) and GetRaidTargetIndex(tankUnit) ~= PAS.Config.iconId then
-				MarkTank(true) -- Force immediate retry
+		-- Start rapid checking mode
+		if not isRapidChecking then
+			isRapidChecking = true
+			local checkCount = 0
+			
+			-- Cancel any existing rapid check timer
+			if rapidCheckTimer then
+				rapidCheckTimer:Cancel()
 			end
-		end)
+			
+			-- Rapid check function
+			local function rapidCheck()
+				checkCount = checkCount + 1
+				
+				if UnitExists(tankUnit) and GetRaidTargetIndex(tankUnit) ~= PAS.Config.iconId then
+					-- Force set the mark again
+					SetRaidTarget(tankUnit, PAS.Config.iconId)
+					Utils.Debug(PAS, "Rapid re-marking tank (attempt " .. checkCount .. ")")
+					
+					-- Continue rapid checking
+					if checkCount < 20 then -- Check up to 20 times (2 seconds)
+						rapidCheckTimer = C_Timer.After(0.1, rapidCheck)
+					else
+						isRapidChecking = false
+					end
+				else
+					-- Mark is correct, stop rapid checking
+					isRapidChecking = false
+				end
+			end
+			
+			-- Start the rapid check cycle
+			rapidCheckTimer = C_Timer.After(0.1, rapidCheck)
+		end
 	end
 end
 
@@ -177,10 +207,12 @@ PeaversCommons.Events:Init(addonName, function()
 		cachedTankUnit = nil
 		-- Force immediate check when someone changes a raid target
 		MarkTank(true)
-		-- Schedule another check slightly later to catch any rapid changes
-		C_Timer.After(0.05, function()
-			MarkTank(true)
-		end)
+		-- Schedule multiple follow-up checks to catch any rapid changes
+		for i = 1, 5 do
+			C_Timer.After(0.05 * i, function()
+				MarkTank(true)
+			end)
+		end
 	end)
 
 	-- Set up periodic checking with more aggressive frequency

@@ -7,7 +7,7 @@ local defaults = {
     enabled = true,
     debugMode = false,
     iconId = 6, -- Square
-    checkFrequency = 0.2,
+    checkFrequency = 1.0,
     DEBUG_ENABLED = false
 }
 
