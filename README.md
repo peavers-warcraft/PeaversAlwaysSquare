@@ -54,3 +54,5 @@ PeaversAlwaysSquare solves the age-old problem of inconsistent raid markers by r
 If you encounter any issues with the addon or have ideas for improvement, please submit them through the repository's issue tracker. Your feedback helps make dungeon and raid marking conventions more consistent for everyone.
 
 *"Square tanks, square markers. It's not rocket engineering."*
+
+<!-- Workflow triggered: 2025-06-16T10:46:02.358574 -->
