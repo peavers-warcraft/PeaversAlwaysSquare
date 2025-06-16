@@ -239,6 +239,5 @@ PeaversCommons.Events:Init(addonName, function()
 		)
 	end)
 end, {
-	-- Standardized announcement message
-	announceMessage = "Use |cff3abdf7/pas config|r to get started"
+	suppressAnnouncement = true
 })
