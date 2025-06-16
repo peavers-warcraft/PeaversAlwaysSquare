@@ -3,7 +3,7 @@
 ## Notes: Automatically sets the tank's raid icon as a square when in a party
 ## IconTexture: Interface\AddOns\PeaversCommons\src\Media\Icon.tga
 ## Author: Peavers
-## Version: 1.0.20
+## Version: 1.0.21
 ## X-Curse-Project-ID: 1235674
 ## Dependencies: PeaversCommons
 ## SavedVariables: PeaversAlwaysSquareDB
