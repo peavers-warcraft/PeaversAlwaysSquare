@@ -1,4 +1,4 @@
-## Interface: 110200, 110205
+## Interface: 110205
 ## Title: |cff3abdf7Peavers|rAlwaysSquare
 ## Notes: Automatically sets the tank's raid icon as a square when in a party
 ## IconTexture: Interface\AddOns\PeaversCommons\src\Media\Icon.tga
