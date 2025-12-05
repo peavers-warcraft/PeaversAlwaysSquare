@@ -14,5 +14,4 @@ jobs:
     with:
       toc_file: PeaversAlwaysSquare.toc
       addon_name: PeaversAlwaysSquare
-      repo_name: peavers/PeaversAlwaysSquare
     secrets: inherit
