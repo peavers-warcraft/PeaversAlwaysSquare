@@ -28,12 +28,17 @@ local function FindTankUnit()
 		return nil
 	end
 
-	local numMembers = GetNumGroupMembers()
 	local tanks = {}
 
-	-- Collect all tanks first
-	for i = 1, numMembers do
-		local unit = i < numMembers and "party" .. i or "player"
+	-- Check the player first
+	if UnitGroupRolesAssigned("player") == "TANK" then
+		table.insert(tanks, "player")
+	end
+
+	-- Check party members (party1 through party4, GetNumSubgroupMembers returns 0-4)
+	local numPartyMembers = GetNumSubgroupMembers()
+	for i = 1, numPartyMembers do
+		local unit = "party" .. i
 		if UnitExists(unit) and UnitGroupRolesAssigned(unit) == "TANK" then
 			table.insert(tanks, unit)
 		end
