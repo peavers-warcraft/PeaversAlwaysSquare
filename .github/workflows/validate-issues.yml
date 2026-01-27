@@ -1,6 +1,3 @@
-# Example caller workflow - copy this to your addon repository
-# Save as: .github/workflows/validate-issues.yml
-
 name: Validate Issues
 
 on:
