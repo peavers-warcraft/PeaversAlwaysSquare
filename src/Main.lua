@@ -243,6 +243,21 @@ PeaversCommons.Events:Init(addonName, function()
 			}
 		)
 	end)
+
+	-- Register with PeaversConfig registry
+	if PeaversCommons.ConfigRegistry then
+		PeaversCommons.ConfigRegistry:Register({
+			name = "PeaversAlwaysSquare",
+			displayName = "Always Square",
+			description = "Automatic tank marker assignment",
+			addonRef = PAS,
+			config = PAS.Config,
+			buildPanel = function(parentFrame)
+				return PAS.ConfigUI:BuildIntoFrame(parentFrame)
+			end,
+			order = 10,
+		})
+	end
 end, {
 	suppressAnnouncement = true
 })

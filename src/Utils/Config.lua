@@ -1,43 +1,29 @@
-local addonName, PAS = ...
-local Config = {}
-PAS.Config = Config
+--------------------------------------------------------------------------------
+-- PeaversAlwaysSquare Configuration
+-- Uses PeaversCommons.ConfigManager with AceDB-3.0 for profile management
+--------------------------------------------------------------------------------
 
--- Default settings
-local defaults = {
+local addonName, PAS = ...
+
+local PeaversCommons = _G.PeaversCommons
+local ConfigManager = PeaversCommons.ConfigManager
+
+local PAS_DEFAULTS = {
     enabled = true,
     debugMode = false,
-    iconId = 6, -- Square
+    iconId = 6,
     checkFrequency = 1.0,
-    DEBUG_ENABLED = false
+    DEBUG_ENABLED = false,
 }
 
--- Initialize configuration
-function Config:Initialize()
-    -- Load saved variables
-    PeaversAlwaysSquareDB = PeaversAlwaysSquareDB or {}
+-- Create the AceDB-backed config
+PAS.Config = ConfigManager:NewWithAceDB(
+    PAS,
+    PAS_DEFAULTS,
+    {
+        savedVariablesName = "PeaversAlwaysSquareDB",
+        profileType = "shared",
+    }
+)
 
-    -- Merge with defaults
-    for k, v in pairs(defaults) do
-        if PeaversAlwaysSquareDB[k] == nil then
-            PeaversAlwaysSquareDB[k] = v
-        end
-    end
-
-    -- Copy to the current config
-    for k, v in pairs(PeaversAlwaysSquareDB) do
-        self[k] = v
-    end
-
-    return self
-end
-
--- Save configuration
-function Config:Save()
-    for k, v in pairs(defaults) do
-        if self[k] ~= nil then
-            PeaversAlwaysSquareDB[k] = self[k]
-        end
-    end
-end
-
-return Config
+return PAS.Config
