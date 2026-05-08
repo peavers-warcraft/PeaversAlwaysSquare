@@ -14,8 +14,9 @@ A World of Warcraft addon that automatically and persistently marks tanks with a
 ## Installation
 
 1. Download from [CurseForge](https://www.curseforge.com/wow/addons/peaversalwayssquare)
-2. Ensure PeaversCommons is also installed
-3. Enable the addon on the character selection screen
+2. Ensure [PeaversCommons](https://www.curseforge.com/wow/addons/peaverscommons) is also installed
+3. Ensure [PeaversConfig](https://www.curseforge.com/wow/addons/peaversconfig) is also installed
+4. Enable the addon on the character selection screen
 
 ## Usage
 
@@ -43,4 +44,5 @@ The addon works automatically once installed. Tanks in your party or raid will b
 
 ## Dependencies
 
-- PeaversCommons (required)
+- [PeaversCommons](https://www.curseforge.com/wow/addons/peaverscommons) (required)
+- [PeaversConfig](https://www.curseforge.com/wow/addons/peaversconfig) (required)
