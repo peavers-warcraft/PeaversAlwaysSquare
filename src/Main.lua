@@ -229,20 +229,23 @@ PeaversCommons.Events:Init(addonName, function()
 
 	-- Use the centralized SettingsUI system from PeaversCommons
 	C_Timer.After(0.5, function()
-		-- Create standardized settings pages
-		PeaversCommons.SettingsUI:CreateSettingsPages(
-			PAS,                         -- Addon reference
-			"PeaversAlwaysSquare",       -- Addon name
-			"Peavers Always Square",     -- Display title
-			"Automatically marks tank with the target marker of your choice.", -- Description
-			{   -- Slash commands
-				"/pas - Manual check",
-				"/pas icon N - Set icon (1-8)",
-				"/pas debug - Toggle debug mode",
-				"/pas config - Open settings"
-			}
-		)
+		PeaversCommons.SettingsUI:CreateRedirectPage(PAS, "PeaversAlwaysSquare", "Peavers Always Square")
 	end)
+
+	-- Register with PeaversConfig registry
+	if PeaversCommons.ConfigRegistry then
+		PeaversCommons.ConfigRegistry:Register({
+			name = "PeaversAlwaysSquare",
+			displayName = "Always Square",
+			description = "Automatic tank marker assignment",
+			addonRef = PAS,
+			config = PAS.Config,
+			buildPanel = function(parentFrame)
+				return PAS.ConfigUI:BuildIntoFrame(parentFrame)
+			end,
+			order = 10,
+		})
+	end
 end, {
 	suppressAnnouncement = true
 })
