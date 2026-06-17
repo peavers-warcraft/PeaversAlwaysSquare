@@ -10,7 +10,6 @@ if not PeaversCommons then
 end
 
 local W = PeaversCommons.Widgets
-local C = W.Colors
 
 local function ResolveWidth(parentFrame, indent)
     local parentWidth = parentFrame:GetWidth() or 0
@@ -39,7 +38,7 @@ function ConfigUI:BuildGeneralPage(parentFrame)
     toggle:SetPoint("TOPLEFT", indent, y)
     y = y - 30
 
-    local _, newY = W:CreateSectionHeader(parentFrame, "Marker Settings", indent, y)
+    _, newY = W:CreateSectionHeader(parentFrame, "Marker Settings", indent, y)
     y = newY - 8
 
     local iconOptions = {
