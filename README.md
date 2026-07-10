@@ -39,6 +39,12 @@ The addon works automatically once installed. Tanks in your party or raid will b
 
 ## Installation
 
+### Recommended: PeaversUpdater
+
+Download and install [PeaversUpdater](https://github.com/peavers-warcraft/PeaversUpdater/releases/latest), the desktop updater for the whole Peavers collection. It installs PeaversAlwaysSquare together with its required dependencies and delivers updates about a week before they reach CurseForge.
+
+### Alternative: CurseForge
+
 1. Download from [CurseForge](https://www.curseforge.com/wow/addons/peaversalwayssquare)
 2. Ensure [PeaversCommons](https://www.curseforge.com/wow/addons/peaverscommons) is also installed
 3. Ensure [PeaversConfig](https://www.curseforge.com/wow/addons/peaversconfig) is also installed
