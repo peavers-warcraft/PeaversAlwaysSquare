@@ -4,6 +4,13 @@ A World of Warcraft addon that automatically and persistently marks tanks with a
 
 **Website:** [peavers.io](https://peavers.io) | **Addon Backup:** [vault.peavers.io](https://vault.peavers.io) | **Issues:** [GitHub](https://github.com/peavers-warcraft/PeaversAlwaysSquare/issues)
 
+<!-- peavers:custom -->
+# PeaversAlwaysSquare
+
+A World of Warcraft addon that automatically and persistently marks tanks with a square icon.
+
+**Website:** [peavers.io](https://peavers.io) | **Addon Backup:** [vault.peavers.io](https://vault.peavers.io) | **Issues:** [GitHub](https://github.com/peavers-warcraft/PeaversAlwaysSquare/issues)
+
 ## Features
 
 - Automatically marks tanks with the square icon
@@ -46,3 +53,15 @@ The addon works automatically once installed. Tanks in your party or raid will b
 
 - [PeaversCommons](https://www.curseforge.com/wow/addons/peaverscommons) (required)
 - [PeaversConfig](https://www.curseforge.com/wow/addons/peaversconfig) (required)
+<!-- /peavers:custom -->
+
+## Installation
+
+1. Download from [CurseForge](https://www.curseforge.com/wow/addons/peaversalwayssquare)
+2. Ensure [PeaversCommons](https://www.curseforge.com/wow/addons/peaverscommons) is also installed
+3. Ensure [PeaversConfig](https://www.curseforge.com/wow/addons/peaversconfig) is also installed
+4. Enable the addon on the character selection screen
+
+---
+
+*Part of the [Peavers](https://peavers.io) addon collection · [Report an issue](https://github.com/peavers-warcraft/PeaversAlwaysSquare/issues) · [Support development on Patreon](https://www.patreon.com/Peavers)*
