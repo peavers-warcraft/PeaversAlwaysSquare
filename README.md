@@ -4,16 +4,18 @@ A World of Warcraft addon that automatically and persistently marks tanks with a
 
 **Website:** [peavers.io](https://peavers.io) | **Addon Backup:** [vault.peavers.io](https://vault.peavers.io) | **Issues:** [GitHub](https://github.com/peavers-warcraft/PeaversAlwaysSquare/issues)
 
-<!-- peavers:custom -->
 ## Features
 
+<!-- peavers:features -->
 - Automatically marks tanks with the square icon
 - Reapplies the mark if someone changes it
 - Customizable icon selection (1-8)
 - Works in both party and raid groups
+<!-- /peavers:features -->
 
 ## Usage
 
+<!-- peavers:usage -->
 The addon works automatically once installed. Tanks in your party or raid will be marked with a square icon.
 
 ### Slash Commands
@@ -35,7 +37,7 @@ The addon works automatically once installed. Tanks in your party or raid will b
 | 6 | Square (default) |
 | 7 | Cross |
 | 8 | Skull |
-<!-- /peavers:custom -->
+<!-- /peavers:usage -->
 
 ## Installation
 
