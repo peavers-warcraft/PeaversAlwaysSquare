@@ -2,8 +2,6 @@
 
 A World of Warcraft addon that automatically and persistently marks tanks with a square icon.
 
-**Website:** [peavers.io](https://peavers.io) | **Addon Backup:** [vault.peavers.io](https://vault.peavers.io) | **Issues:** [GitHub](https://github.com/peavers-warcraft/PeaversAlwaysSquare/issues)
-
 ## Features
 
 <!-- peavers:features -->
@@ -39,11 +37,12 @@ The addon works automatically once installed. Tanks in your party or raid will b
 | 8 | Skull |
 <!-- /peavers:usage -->
 
+
 ## Installation
 
 ### Recommended: PeaversUpdater
 
-Download and install [PeaversUpdater](https://github.com/peavers-warcraft/PeaversUpdater/releases/latest), the desktop updater for the whole Peavers collection. It installs PeaversAlwaysSquare together with its required dependencies and delivers updates about a week before they reach CurseForge.
+Download and install [PeaversUpdater](https://github.com/peavers-warcraft/PeaversUpdater/releases/latest), the desktop updater for the whole Peavers collection. It installs PeaversAlwaysSquare together with its required dependencies and delivers updates before they reach CurseForge.
 
 ### Alternative: CurseForge
 
