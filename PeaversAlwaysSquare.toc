@@ -1,4 +1,4 @@
-## Interface: 120001, 120005
+## Interface: 120001, 120005, 120007
 
 ## Title: |cff3abdf7Peavers|rAlwaysSquare
 ## Notes: Automatically sets the tank's raid icon as a square when in a party
