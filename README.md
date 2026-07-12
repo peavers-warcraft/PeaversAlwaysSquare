@@ -1,5 +1,7 @@
 # PeaversAlwaysSquare
 
+[![AddonSentry](https://api.addonsentry.io/api/public/repos/peavers-warcraft/PeaversAlwaysSquare/badge.svg)](https://addonsentry.io/dashboard/peavers-warcraft/PeaversAlwaysSquare)
+
 A World of Warcraft addon that automatically and persistently marks tanks with a square icon.
 
 ## Features
