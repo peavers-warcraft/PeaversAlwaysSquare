@@ -240,9 +240,7 @@ PeaversCommons.Events:Init(addonName, function()
 			description = "Automatic tank marker assignment",
 			addonRef = PAS,
 			config = PAS.Config,
-			buildPanel = function(parentFrame)
-				return PAS.ConfigUI:BuildIntoFrame(parentFrame)
-			end,
+			pages = PAS.ConfigUI:GetPages(),
 			order = 10,
 		})
 	end
