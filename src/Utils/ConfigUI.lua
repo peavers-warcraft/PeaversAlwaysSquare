@@ -79,8 +79,26 @@ function ConfigUI:BuildGeneralPage(parentFrame)
     parentFrame:SetHeight(math.abs(y) + 30)
 end
 
+function ConfigUI:BuildInfoPage(parentFrame)
+    PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, "Always Square", {
+        "Automatically marks the tank in your party or raid with a raid target " ..
+            "icon - the square by default - and keeps it there.",
+        { command = "/pas", desc = "force a re-mark of all tanks right now" },
+        { command = "/pas icon N", desc = "use a different icon (1-8)" },
+
+        { header = "How marking works" },
+        "The addon watches role assignments, so anyone flagged as a tank gets " ..
+            "the icon as soon as they join or swap roles. If someone else " ..
+            "changes or removes the mark mid-run, it is quietly reapplied.",
+        "Marking requires the usual game permissions: in a raid you need to be " ..
+            "leader or assistant. In five-player groups anyone can mark, so it " ..
+            "just works in Mythic+.",
+    })
+end
+
 function ConfigUI:GetPages()
     return {
+        { key = "info", label = "Information", builder = function(f) ConfigUI:BuildInfoPage(f) end },
         { key = "general", label = "General", builder = function(f) ConfigUI:BuildGeneralPage(f) end },
     }
 end
