@@ -66,7 +66,7 @@ local function FindTankUnit()
 end
 
 -- Function to find and mark the tank with immediate retries
-function MarkTank(force)
+local function MarkTank(force)
 	if not IsInGroup() then
 		Utils.Debug(PAS, "Not in group")
 		cachedTankUnit = nil
@@ -141,8 +141,11 @@ function MarkTank(force)
 	end
 end
 
--- Make the function globally accessible
-_G.MarkTank = MarkTank
+-- Reachable as PeaversAlwaysSquare.MarkTank(). Deliberately NOT a bare _G.MarkTank:
+-- that name is generic enough to collide with any other raid-marking addon, and /pas
+-- is the supported way to trigger a manual check.
+PAS.MarkTank = MarkTank
+_G.PeaversAlwaysSquare = PAS
 
 -- Register slash commands
 PeaversCommons.SlashCommands:Register(addonName, "pas", {
