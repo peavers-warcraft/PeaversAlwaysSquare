@@ -27,7 +27,7 @@ function ConfigUI:BuildGeneralPage(parentFrame)
     local _, newY = W:CreateSectionHeader(parentFrame, "General Settings", indent, y)
     y = newY - 8
 
-    local toggle = W:CreateToggle(parentFrame, "Enable automatic tank marking", {
+    local toggle = W:CreateCheckbox(parentFrame, "Enable automatic tank marking", {
         checked = PAS.Config.enabled ~= false,
         width = width,
         onChange = function(checked)
