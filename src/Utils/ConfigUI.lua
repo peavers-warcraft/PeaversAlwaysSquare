@@ -27,16 +27,22 @@ function ConfigUI:BuildGeneralPage(parentFrame)
     local _, newY = W:CreateSectionHeader(parentFrame, "General Settings", indent, y)
     y = newY - 8
 
-    local toggle = W:CreateCheckbox(parentFrame, "Enable automatic tank marking", {
+    -- Each control anchors itself and hands back where the next one goes, so
+    -- this page no longer has to know how tall a checkbox, a dropdown or a
+    -- slider happens to be. The numbers that used to live here - 30, 58, 52 -
+    -- were a copy of Widgets' metrics kept by hand, and they drifted: the same
+    -- 22px checkbox was advanced past by seven different values across the
+    -- collection.
+    local toggle
+    toggle, y = W:CreateCheckbox(parentFrame, "Enable automatic tank marking", {
         checked = PAS.Config.enabled ~= false,
         width = width,
+        x = indent, y = y,
         onChange = function(checked)
             PAS.Config.enabled = checked
             PAS.Config:Save()
         end,
     })
-    toggle:SetPoint("TOPLEFT", indent, y)
-    y = y - 30
 
     _, newY = W:CreateSectionHeader(parentFrame, "Marker Settings", indent, y)
     y = newY - 8
@@ -52,29 +58,29 @@ function ConfigUI:BuildGeneralPage(parentFrame)
         { value = 8, label = "Skull" },
     }
 
-    local iconDropdown = W:CreateDropdown(parentFrame, "Target Marker Icon", {
+    local iconDropdown
+    iconDropdown, y = W:CreateDropdown(parentFrame, "Target Marker Icon", {
         options = iconOptions,
         selected = PAS.Config.iconId or 6,
         width = width,
+        x = indent, y = y,
         onChange = function(value)
             PAS.Config.iconId = value
             PAS.Config:Save()
         end,
     })
-    iconDropdown:SetPoint("TOPLEFT", indent, y)
-    y = y - 58
 
-    local freqSlider = W:CreateSlider(parentFrame, "Check Frequency (seconds)", {
+    local freqSlider
+    freqSlider, y = W:CreateSlider(parentFrame, "Check Frequency (seconds)", {
         min = 0.5, max = 5.0, step = 0.5,
         value = PAS.Config.checkFrequency or 1.0,
         width = width,
+        x = indent, y = y,
         onChange = function(value)
             PAS.Config.checkFrequency = value
             PAS.Config:Save()
         end,
     })
-    freqSlider:SetPoint("TOPLEFT", indent, y)
-    y = y - 52
 
     parentFrame:SetHeight(math.abs(y) + 30)
 end
