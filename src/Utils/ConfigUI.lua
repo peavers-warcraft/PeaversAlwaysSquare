@@ -33,8 +33,7 @@ function ConfigUI:BuildGeneralPage(parentFrame)
     -- were a copy of Widgets' metrics kept by hand, and they drifted: the same
     -- 22px checkbox was advanced past by seven different values across the
     -- collection.
-    local toggle
-    toggle, y = W:CreateCheckbox(parentFrame, "Enable automatic tank marking", {
+    _, y = W:CreateCheckbox(parentFrame, "Enable automatic tank marking", {
         checked = PAS.Config.enabled ~= false,
         width = width,
         x = indent, y = y,
@@ -58,8 +57,7 @@ function ConfigUI:BuildGeneralPage(parentFrame)
         { value = 8, label = "Skull" },
     }
 
-    local iconDropdown
-    iconDropdown, y = W:CreateDropdown(parentFrame, "Target Marker Icon", {
+    _, y = W:CreateDropdown(parentFrame, "Target Marker Icon", {
         options = iconOptions,
         selected = PAS.Config.iconId or 6,
         width = width,
@@ -70,8 +68,7 @@ function ConfigUI:BuildGeneralPage(parentFrame)
         end,
     })
 
-    local freqSlider
-    freqSlider, y = W:CreateSlider(parentFrame, "Check Frequency (seconds)", {
+    _, y = W:CreateSlider(parentFrame, "Check Frequency (seconds)", {
         min = 0.5, max = 5.0, step = 0.5,
         value = PAS.Config.checkFrequency or 1.0,
         width = width,
