@@ -57,42 +57,13 @@ function ConfigUI:BuildGeneralPage(parentFrame)
         end,
     })
 
-    _, newY = W:CreateSectionHeader(parentFrame, "Marker Settings", indent, y)
-    y = newY - 8
-
-    local iconOptions = {
-        { value = 1, label = "Star" },
-        { value = 2, label = "Circle" },
-        { value = 3, label = "Diamond" },
-        { value = 4, label = "Triangle" },
-        { value = 5, label = "Moon" },
-        { value = 6, label = "Square" },
-        { value = 7, label = "Cross" },
-        { value = 8, label = "Skull" },
-    }
-
-    local iconDropdown
-    iconDropdown, y = W:CreateDropdown(parentFrame, "Target Marker Icon", {
-        options = iconOptions,
-        selected = PAS.Config.iconId or 6,
-        width = width,
-        x = indent, y = y,
-        onChange = function(value)
-            PAS.Config.iconId = value
-            PAS.Config:Save()
-            PAS.MarkButton:Refresh()
-        end,
-    })
-
     parentFrame:SetHeight(math.abs(y) + 30)
 end
 
 function ConfigUI:BuildInfoPage(parentFrame)
     PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, "Always Square", {
-        "Marks the tank in your party with a raid target icon - the square by " ..
-            "default - in a single press.",
+        "Marks the tank in your party with the square, in a single press.",
         { command = "/pas", desc = "how to mark, and the macro to do it" },
-        { command = "/pas icon N", desc = "use a different icon (1-8)" },
         { command = "/pas reset", desc = "put the marker button back where it started" },
 
         { header = "How marking works" },
@@ -102,8 +73,14 @@ function ConfigUI:BuildInfoPage(parentFrame)
         "When your party's tank has no marker, a small button appears. Click " ..
             "it and the tank is marked. Shift-drag moves it.",
         "Or skip the button: bind a key under Key Bindings > AddOns > Peavers " ..
-            "Always Square, or use /click PeaversAlwaysSquareMarkButton in a " ..
-            "macro. Both work in combat and with the button hidden.",
+            "Always Square. Both the binding and the macro line below work in " ..
+            "combat and with the button hidden.",
+
+        { header = "As close to automatic as it gets" },
+        "Add /click PeaversAlwaysSquareMarkButton as a line in a macro you " ..
+            "already press - your mount, or an opening ability. Every press " ..
+            "then makes sure the tank has the square. It does nothing if they " ..
+            "already have it, so it is safe to spam.",
         "The addon watches role assignments, so the press always goes to " ..
             "whoever is flagged as the tank. It stays out of the way in raids.",
     })
