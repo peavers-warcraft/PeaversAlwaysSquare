@@ -24,7 +24,13 @@ local dragging = false
 -- binding, /click - can be tried solo. Held in memory only: it must never
 -- survive a reload and leave someone marking themselves in a real group.
 local testMode = false
-local testMarked = nil
+local testState = nil
+
+-- Whether the player still owes the current tank a press. It is the only thing
+-- that can decide visibility where markers cannot be read - see ReadMark.
+local prompting = false
+local dismissed = false
+local lastUnit, lastGUID
 
 local function IsSecret(value)
 	return issecretvalue ~= nil and issecretvalue(value)
@@ -69,18 +75,20 @@ local function FindTankUnit()
 	return nil, unknown
 end
 
--- An unmarked unit still reads as plain nil; any marker at all comes back
--- secret. So "needs a mark" is knowable, "has the wrong mark" is not - and a
--- secret may be truth-tested but never compared, hence `not mark` over `== nil`.
-local function NeedsMark(unit)
+-- What can be learned about a unit's marker: "none", "square", "other", or
+-- "unknown". Out in the world the index reads normally. Inside restricted
+-- content - instances, keys, encounters - it comes back secret, and it does so
+-- even for an unmarked unit, so a secret says nothing at all: not "marked", not
+-- "unmarked". Secrets may be tested for secrecy but never compared.
+local function ReadMark(unit)
 	local mark = GetRaidTargetIndex(unit)
-	if not mark then
-		return true
-	end
 	if IsSecret(mark) then
-		return false
+		return "unknown"
 	end
-	return mark ~= SQUARE
+	if not mark then
+		return "none"
+	end
+	return mark == SQUARE and "square" or "other"
 end
 
 -- Said once, the first time the button appears: people upgrading from the
@@ -130,7 +138,7 @@ local function ShowTooltip(self)
 	GameTooltip:AddLine("Click to give the tank the square.", 1, 1, 1, true)
 	GameTooltip:AddLine("Addons can no longer place markers by themselves, so this takes one press. " ..
 		"A key binding is under Key Bindings > AddOns.", 0.7, 0.7, 0.7, true)
-	GameTooltip:AddLine("Shift-drag to move.", 0.7, 0.7, 0.7, true)
+	GameTooltip:AddLine("Right-click to dismiss. Shift-drag to move.", 0.7, 0.7, 0.7, true)
 	GameTooltip:Show()
 end
 
@@ -179,6 +187,22 @@ function MarkButton:Create()
 		end
 	end)
 	button:SetScript("OnDragStop", StopDragging)
+
+	-- Any press settles the debt: a click, the key binding and /click all land
+	-- here, and so does the right-click that dismisses without marking. In
+	-- combat the button cannot be hidden, so it dims until the fight ends.
+	button:HookScript("PostClick", function(frame, mouseButton)
+		if testMode then
+			return
+		end
+		prompting = false
+		dismissed = mouseButton == "RightButton"
+		if InCombatLockdown() then
+			frame:SetAlpha(0.3)
+		else
+			MarkButton:Refresh()
+		end
+	end)
 	button:SetScript("OnEnter", ShowTooltip)
 	button:SetScript("OnLeave", GameTooltip_Hide)
 
@@ -192,16 +216,18 @@ local function ReportTestState()
 	if not testMode then
 		return
 	end
-	local marked = not NeedsMark("player")
-	if marked == testMarked then
+	local state = ReadMark("player")
+	if state == testState then
 		return
 	end
-	if marked then
+	if state == "square" then
 		Utils.Print(PAS, "Test: you are marked, so the button works. Right-click it to clear the marker.")
-	elseif testMarked ~= nil then
+	elseif state == "unknown" then
+		Utils.Print(PAS, "Test: the game hides markers from addons in here, so look above your head for the square instead.")
+	elseif testState == "square" then
 		Utils.Print(PAS, "Test: your marker is cleared.")
 	end
-	testMarked = marked
+	testState = state
 end
 
 -- Points the secure action at the current tank and decides whether the button
@@ -235,18 +261,56 @@ function MarkButton:Refresh()
 
 	-- Right-click clears, in test mode only: a test needs to be repeatable, and
 	-- nobody should be one stray click from unmarking a real tank.
-	button:SetAttribute("type2", testMode and "raidtarget" or nil)
+	-- Outside test mode "dismiss" names no secure action, so a right-click does
+	-- nothing but reach PostClick, which puts the button away unmarked.
+	button:SetAttribute("type2", testMode and "raidtarget" or "dismiss")
 	button:SetAttribute("action2", testMode and "clear" or nil)
 	button.label:SetText(testMode and "Test: mark me" or "Mark tank")
+	button:SetAlpha(1)
 
-	-- Always on screen while testing, whatever the marker or the show setting
-	local show = testMode or (unit ~= nil and PAS.Config.showButton and NeedsMark(unit)) or false
+	-- A tank not seen before is owed a press. The GUID catches a new player
+	-- landing on the same unit token; it turns secret along with everything
+	-- else, and then the token alone has to do.
+	local mark = "unknown"
+	if unit and not testMode then
+		local guid = UnitGUID(unit)
+		if IsSecret(guid) then
+			guid = nil
+		end
+		if unit ~= lastUnit or (guid and lastGUID and guid ~= lastGUID) then
+			prompting, dismissed = true, false
+		end
+		lastUnit, lastGUID = unit, guid or lastGUID
+
+		mark = ReadMark(unit)
+		if mark == "square" then
+			prompting, dismissed = false, false
+		end
+	elseif not testMode then
+		lastUnit, lastGUID, prompting, dismissed = nil, nil, false, false
+	end
+
+	-- Where the marker can be read it decides outright, which is what keeps the
+	-- square on after someone removes it. Where it cannot, the prompt does.
+	-- Test mode is always on screen, whatever the marker or the show setting.
+	-- A dismissal holds until there is a new tank, a ready check or a square.
+	local wanted = not dismissed
+		and (mark == "none" or mark == "other" or (mark == "unknown" and prompting))
+	local show = testMode or (unit ~= nil and PAS.Config.showButton and wanted) or false
 	button:SetShown(show)
 	if show and not testMode then
 		AnnounceOnce()
 	end
 
-	Utils.Debug(PAS, "Tank unit: " .. (unit or "none") .. ", button " .. (show and "shown" or "hidden"))
+	Utils.Debug(PAS, "Tank unit: " .. (unit or "none") .. ", marker " .. mark .. ", prompting " .. tostring(prompting)
+		.. ", dismissed " .. tostring(dismissed) .. ", button " .. (show and "shown" or "hidden"))
+end
+
+-- Asks for a press again. A ready check is the last calm moment before a key,
+-- and inside the instance the addon cannot see whether the square survived.
+function MarkButton:Prompt()
+	prompting, dismissed = true, false
+	self:Refresh()
 end
 
 function MarkButton:IsTestMode()
@@ -255,7 +319,7 @@ end
 
 function MarkButton:SetTestMode(on)
 	testMode = on and true or false
-	testMarked = nil
+	testState = nil
 	if testMode then
 		Utils.Print(PAS, "Test mode on. The marker button now points at you: left-click it, press your key binding " ..
 			"or run /click PeaversAlwaysSquareMarkButton, and the square should appear over your head.")
