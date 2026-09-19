@@ -14,144 +14,22 @@ local iconNames = {
 	[1] = "Star", [2] = "Circle", [3] = "Diamond", [4] = "Triangle",
 	[5] = "Moon", [6] = "Square", [7] = "Cross", [8] = "Skull"
 }
+PAS.iconNames = iconNames
 
--- Track last mark time to prevent spam
-local lastMarkTime = 0
-local markCooldown = 0 -- No cooldown for instant response
-local cachedTankUnit = nil -- Cache the tank unit for faster checks
-local rapidCheckTimer = nil -- Timer for rapid checking when mark is wrong
-local isRapidChecking = false -- Flag to indicate rapid checking mode
-
--- Function to find the tank unit
-local function FindTankUnit()
-	if not IsInGroup() then
-		return nil
-	end
-
-	local tanks = {}
-
-	-- Check the player first
-	if UnitGroupRolesAssigned("player") == "TANK" then
-		table.insert(tanks, "player")
-	end
-
-	-- Check party members (party1 through party4, GetNumSubgroupMembers returns 0-4)
-	local numPartyMembers = GetNumSubgroupMembers()
-	for i = 1, numPartyMembers do
-		local unit = "party" .. i
-		if UnitExists(unit) and UnitGroupRolesAssigned(unit) == "TANK" then
-			table.insert(tanks, unit)
-		end
-	end
-
-	-- If only one tank, return it
-	if #tanks == 1 then
-		cachedTankUnit = tanks[1]
-		return tanks[1]
-	elseif #tanks > 1 then
-		-- If multiple tanks, prefer the one already marked with square
-		for _, unit in ipairs(tanks) do
-			if GetRaidTargetIndex(unit) == PAS.Config.iconId then
-				cachedTankUnit = unit
-				return unit
-			end
-		end
-		-- Otherwise return the first tank
-		cachedTankUnit = tanks[1]
-		return tanks[1]
-	end
-
-	cachedTankUnit = nil
-	return nil
-end
-
--- Function to find and mark the tank with immediate retries
-local function MarkTank(force)
-	if not IsInGroup() then
-		Utils.Debug(PAS, "Not in group")
-		cachedTankUnit = nil
-		return
-	end
-
-	if IsInRaid() then
-		Utils.Debug(PAS, "In raid - disabled")
-		cachedTankUnit = nil
-		return
-	end
-
-	-- Respect cooldown unless forced
-	local currentTime = GetTime()
-	if not force and (currentTime - lastMarkTime) < markCooldown then
-		return
-	end
-
-	-- Use cached tank unit if valid, otherwise find it
-	local tankUnit = cachedTankUnit
-	if not tankUnit or not UnitExists(tankUnit) or UnitGroupRolesAssigned(tankUnit) ~= "TANK" then
-		tankUnit = FindTankUnit()
-		if not tankUnit then
-			Utils.Debug(PAS, "No tank found")
-			return
-		end
-	end
-
-	local name = UnitName(tankUnit)
-	local currentMark = GetRaidTargetIndex(tankUnit)
-
-	-- Always try to set the mark if it's different
-	if currentMark ~= PAS.Config.iconId then
-		SetRaidTarget(tankUnit, PAS.Config.iconId)
-		lastMarkTime = currentTime
-		Utils.Debug(PAS, "Marked " .. name .. " with " .. iconNames[PAS.Config.iconId])
-
-		-- Start rapid checking mode
-		if not isRapidChecking then
-			isRapidChecking = true
-			local checkCount = 0
-			
-			-- Cancel any existing rapid check timer
-			if rapidCheckTimer then
-				rapidCheckTimer:Cancel()
-			end
-			
-			-- Rapid check function
-			local function rapidCheck()
-				checkCount = checkCount + 1
-				
-				if UnitExists(tankUnit) and GetRaidTargetIndex(tankUnit) ~= PAS.Config.iconId then
-					-- Force set the mark again
-					SetRaidTarget(tankUnit, PAS.Config.iconId)
-					Utils.Debug(PAS, "Rapid re-marking tank (attempt " .. checkCount .. ")")
-					
-					-- Continue rapid checking
-					if checkCount < 20 then -- Check up to 20 times (2 seconds)
-						rapidCheckTimer = C_Timer.After(0.1, rapidCheck)
-					else
-						isRapidChecking = false
-					end
-				else
-					-- Mark is correct, stop rapid checking
-					isRapidChecking = false
-				end
-			end
-			
-			-- Start the rapid check cycle
-			rapidCheckTimer = C_Timer.After(0.1, rapidCheck)
-		end
-	end
-end
-
--- Reachable as PeaversAlwaysSquare.MarkTank(). Deliberately NOT a bare _G.MarkTank:
--- that name is generic enough to collide with any other raid-marking addon, and /pas
--- is the supported way to trigger a manual check.
-PAS.MarkTank = MarkTank
 _G.PeaversAlwaysSquare = PAS
+
+-- Key Bindings > AddOns. The binding itself is the CLICK in Bindings.xml: the
+-- press has to land on the secure button, since no addon function may mark.
+_G.BINDING_HEADER_PEAVERSALWAYSSQUARE = "Peavers Always Square"
+_G["BINDING_NAME_CLICK PeaversAlwaysSquareMarkButton:LeftButton"] = "Mark the tank"
 
 -- Register slash commands
 PeaversCommons.SlashCommands:Register(addonName, "pas", {
 	default = function()
-		Utils.Print(PAS, "Manual check performed")
-		MarkTank()
+		-- A slash command runs as addon code, so it cannot place the mark itself
+		PAS.MarkButton:Refresh()
+		Utils.Print(PAS, "Click the marker button or press your key binding to mark the tank.")
+		print("  Macro: /click PeaversAlwaysSquareMarkButton")
 	end,
 	debug = function()
 		PAS.Config.debugMode = not PAS.Config.debugMode
@@ -164,15 +42,23 @@ PeaversCommons.SlashCommands:Register(addonName, "pas", {
 		if iconId and iconId >= 1 and iconId <= 8 then
 			PAS.Config.iconId = iconId
 			PAS.Config:Save()
+			PAS.MarkButton:Refresh()
 			Utils.Print(PAS, "Using icon: " .. iconNames[iconId])
+			if InCombatLockdown() then
+				Utils.Print(PAS, "The button switches over when combat ends")
+			end
 		else
 			Utils.Print(PAS, "Invalid icon (use 1-8)")
 		end
 	end,
+	reset = function()
+		PAS.MarkButton:ResetPosition()
+	end,
 	help = function()
 		Utils.Print(PAS, "Commands:")
-		print("  /pas - Manual check")
+		print("  /pas - How to mark the tank")
 		print("  /pas icon N - Set icon (1-8)")
+		print("  /pas reset - Put the marker button back where it started")
 		print("  /pas debug - Toggle debug mode")
 		print("  /pas config - Open settings")
 	end
@@ -193,42 +79,30 @@ PeaversCommons.Events:Init(addonName, function()
 		PAS.Patrons:Initialize()
 	end
 
-	PeaversCommons.Events:RegisterEvent("GROUP_ROSTER_UPDATE", function()
-		MarkTank()
+	PAS.MarkButton:Create()
+
+	-- Everything that can change who the tank is, whether they are marked, or
+	-- whether the button may be touched again. No polling: there is nothing
+	-- left for a timer to fix, only a button to keep pointed the right way.
+	local function refresh()
+		PAS.MarkButton:Refresh()
+	end
+	for _, event in ipairs({
+		"GROUP_ROSTER_UPDATE",
+		"PLAYER_ROLES_ASSIGNED",
+		"ROLE_CHANGED_INFORM",
+		"PLAYER_ENTERING_WORLD",
+		"RAID_TARGET_UPDATE",
+		"PLAYER_REGEN_ENABLED",
+	}) do
+		PeaversCommons.Events:RegisterEvent(event, refresh)
+	end
+
+	PeaversCommons.Events:RegisterEvent("PLAYER_REGEN_DISABLED", function()
+		PAS.MarkButton:OnCombatStart()
 	end)
 
-	PeaversCommons.Events:RegisterEvent("READY_CHECK", function()
-		MarkTank()
-	end)
-
-	PeaversCommons.Events:RegisterEvent("PLAYER_ENTERING_WORLD", function()
-		MarkTank()
-	end)
-
-	PeaversCommons.Events:RegisterEvent("ROLE_CHANGED_INFORM", function()
-		MarkTank()
-	end)
-
-	-- Register for raid target icon changes with immediate response
-	PeaversCommons.Events:RegisterEvent("RAID_TARGET_UPDATE", function()
-		-- Clear the cache to force a fresh check
-		cachedTankUnit = nil
-		-- Force immediate check when someone changes a raid target
-		MarkTank(true)
-		-- Schedule multiple follow-up checks to catch any rapid changes
-		for i = 1, 5 do
-			C_Timer.After(0.05 * i, function()
-				MarkTank(true)
-			end)
-		end
-	end)
-
-	-- Set up periodic checking with more aggressive frequency
-	PeaversCommons.Events:RegisterOnUpdate(PAS.Config.checkFrequency, function()
-		if PAS.Config.enabled then
-			MarkTank()
-		end
-	end, "PAS_TankMarker")
+	refresh()
 
 	-- Use the centralized SettingsUI system from PeaversCommons
 	C_Timer.After(0.5, function()
