@@ -18,3 +18,6 @@ stds.wow        = base.wow
 -- base.globals (PeaversChangelogs, SlashCmdList) + this addon's SavedVariables.
 globals = base.globals
 for _, g in ipairs({"PeaversAlwaysSquareDB"}) do globals[#globals + 1] = g end
+
+-- WoW API the curated stds.wow does not carry yet.
+read_globals = {"GetRaidTargetIndex", "IsShiftKeyDown"}
