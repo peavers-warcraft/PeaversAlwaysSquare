@@ -19,8 +19,9 @@ _G["BINDING_NAME_CLICK PeaversAlwaysSquareMarkButton:LeftButton"] = "Mark the ta
 -- Register slash commands
 PeaversCommons.SlashCommands:Register(addonName, "pas", {
 	default = function()
-		-- A slash command runs as addon code, so it cannot place the mark itself
-		PAS.MarkButton:Refresh()
+		-- A slash command runs as addon code, so it cannot place the mark itself.
+		-- What it can do is bring the button back.
+		PAS.MarkButton:Prompt()
 		Utils.Print(PAS, "Click the marker button or press your key binding to mark the tank.")
 		print("  Or add this line to a macro you already press, and the tank gets marked along the way:")
 		print("  /click PeaversAlwaysSquareMarkButton")
@@ -36,7 +37,7 @@ PeaversCommons.SlashCommands:Register(addonName, "pas", {
 	end,
 	help = function()
 		Utils.Print(PAS, "Commands:")
-		print("  /pas - How to mark the tank")
+		print("  /pas - Bring the marker button back, and how to mark")
 		print("  /pas reset - Put the marker button back where it started")
 		print("  /pas debug - Toggle debug mode")
 		print("  /pas config - Open settings")
@@ -76,6 +77,10 @@ PeaversCommons.Events:Init(addonName, function()
 	}) do
 		PeaversCommons.Events:RegisterEvent(event, refresh)
 	end
+
+	PeaversCommons.Events:RegisterEvent("READY_CHECK", function()
+		PAS.MarkButton:Prompt()
+	end)
 
 	PeaversCommons.Events:RegisterEvent("PLAYER_REGEN_DISABLED", function()
 		PAS.MarkButton:OnCombatStart()

@@ -46,7 +46,7 @@ function ConfigUI:BuildGeneralPage(parentFrame)
     })
 
     -- Off leaves the key binding and /click working; only the prompt goes away.
-    _, y = W:CreateCheckbox(parentFrame, "Show the marker button while the tank is unmarked", {
+    _, y = W:CreateCheckbox(parentFrame, "Show the marker button when a tank needs marking", {
         checked = PAS.Config.showButton ~= false,
         width = width,
         x = indent, y = y,
@@ -90,15 +90,20 @@ end
 function ConfigUI:BuildInfoPage(parentFrame)
     PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, "Always Square", {
         "Marks the tank in your party with the square, in a single press.",
-        { command = "/pas", desc = "how to mark, and the macro to do it" },
+        { command = "/pas", desc = "bring the marker button back, and the macro to mark with" },
         { command = "/pas reset", desc = "put the marker button back where it started" },
 
         { header = "How marking works" },
         "Since patch 12.0 the game no longer lets addons place raid markers on " ..
             "their own, or read which marker a player has. Always Square used " ..
             "to mark the tank by itself; it now needs one press from you.",
-        "When your party's tank has no marker, a small button appears. Click " ..
-            "it and the tank is marked. Shift-drag moves it.",
+        "A small button appears when a tank joins your party, and again on " ..
+            "every ready check. Click it and the tank is marked; right-click " ..
+            "puts it away unmarked. Shift-drag moves it.",
+        "Out in the world the addon can still see an unmarked tank, so the " ..
+            "button also comes back if someone removes the square. Inside " ..
+            "instances the game hides markers from addons, which is why it " ..
+            "asks on ready checks rather than guessing.",
         "Or skip the button: bind a key under Key Bindings > AddOns > Peavers " ..
             "Always Square. Both the binding and the macro line below work in " ..
             "combat and with the button hidden.",
