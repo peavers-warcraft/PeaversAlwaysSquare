@@ -34,13 +34,26 @@ function ConfigUI:BuildGeneralPage(parentFrame)
     -- 22px checkbox was advanced past by seven different values across the
     -- collection.
     local toggle
-    toggle, y = W:CreateCheckbox(parentFrame, "Enable automatic tank marking", {
+    toggle, y = W:CreateCheckbox(parentFrame, "Enable tank marking", {
         checked = PAS.Config.enabled ~= false,
         width = width,
         x = indent, y = y,
         onChange = function(checked)
             PAS.Config.enabled = checked
             PAS.Config:Save()
+            PAS.MarkButton:Refresh()
+        end,
+    })
+
+    -- Off leaves the key binding and /click working; only the prompt goes away.
+    _, y = W:CreateCheckbox(parentFrame, "Show the marker button while the tank is unmarked", {
+        checked = PAS.Config.showButton ~= false,
+        width = width,
+        x = indent, y = y,
+        onChange = function(checked)
+            PAS.Config.showButton = checked
+            PAS.Config:Save()
+            PAS.MarkButton:Refresh()
         end,
     })
 
@@ -67,18 +80,7 @@ function ConfigUI:BuildGeneralPage(parentFrame)
         onChange = function(value)
             PAS.Config.iconId = value
             PAS.Config:Save()
-        end,
-    })
-
-    local freqSlider
-    freqSlider, y = W:CreateSlider(parentFrame, "Check Frequency (seconds)", {
-        min = 0.5, max = 5.0, step = 0.5,
-        value = PAS.Config.checkFrequency or 1.0,
-        width = width,
-        x = indent, y = y,
-        onChange = function(value)
-            PAS.Config.checkFrequency = value
-            PAS.Config:Save()
+            PAS.MarkButton:Refresh()
         end,
     })
 
@@ -87,18 +89,23 @@ end
 
 function ConfigUI:BuildInfoPage(parentFrame)
     PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, "Always Square", {
-        "Automatically marks the tank in your party or raid with a raid target " ..
-            "icon - the square by default - and keeps it there.",
-        { command = "/pas", desc = "force a re-mark of all tanks right now" },
+        "Marks the tank in your party with a raid target icon - the square by " ..
+            "default - in a single press.",
+        { command = "/pas", desc = "how to mark, and the macro to do it" },
         { command = "/pas icon N", desc = "use a different icon (1-8)" },
+        { command = "/pas reset", desc = "put the marker button back where it started" },
 
         { header = "How marking works" },
-        "The addon watches role assignments, so anyone flagged as a tank gets " ..
-            "the icon as soon as they join or swap roles. If someone else " ..
-            "changes or removes the mark mid-run, it is quietly reapplied.",
-        "Marking requires the usual game permissions: in a raid you need to be " ..
-            "leader or assistant. In five-player groups anyone can mark, so it " ..
-            "just works in Mythic+.",
+        "Since patch 12.0 the game no longer lets addons place raid markers on " ..
+            "their own, or read which marker a player has. Always Square used " ..
+            "to mark the tank by itself; it now needs one press from you.",
+        "When your party's tank has no marker, a small button appears. Click " ..
+            "it and the tank is marked. Shift-drag moves it.",
+        "Or skip the button: bind a key under Key Bindings > AddOns > Peavers " ..
+            "Always Square, or use /click PeaversAlwaysSquareMarkButton in a " ..
+            "macro. Both work in combat and with the button hidden.",
+        "The addon watches role assignments, so the press always goes to " ..
+            "whoever is flagged as the tank. It stays out of the way in raids.",
     })
 end
 
