@@ -57,6 +57,33 @@ function ConfigUI:BuildGeneralPage(parentFrame)
         end,
     })
 
+    _, newY = W:CreateSectionHeader(parentFrame, "Testing", indent, y)
+    y = newY - 8
+
+    -- Not saved: test mode lives for the session only, so a reload can never
+    -- leave the button pointed at the player in a real group.
+    _, y = W:CreateCheckbox(parentFrame, "Test mode: point the marker button at me", {
+        checked = PAS.MarkButton:IsTestMode(),
+        width = width,
+        x = indent, y = y,
+        onChange = function(checked)
+            PAS.MarkButton:SetTestMode(checked)
+        end,
+    })
+
+    local note = W:CreateLabel(parentFrame,
+        "Try the addon without a group. While this is on, the marker button stays on screen and marks you " ..
+            "instead of a tank: left-click it, press your key binding or run the /click macro, and the square " ..
+            "should appear over your head. Right-click the button to clear it and go again. " ..
+            "Test mode switches itself off when you reload or log out.",
+        { width = width, wrap = true })
+    note:SetPoint("TOPLEFT", indent, y)
+    local noteHeight = note:GetStringHeight() or 0
+    if noteHeight <= 0 then
+        noteHeight = 56
+    end
+    y = y - noteHeight - 12
+
     parentFrame:SetHeight(math.abs(y) + 30)
 end
 
@@ -76,13 +103,18 @@ function ConfigUI:BuildInfoPage(parentFrame)
             "Always Square. Both the binding and the macro line below work in " ..
             "combat and with the button hidden.",
 
+        "The addon watches role assignments, so the press always goes to " ..
+            "whoever is flagged as the tank. It stays out of the way in raids.",
+
         { header = "As close to automatic as it gets" },
         "Add /click PeaversAlwaysSquareMarkButton as a line in a macro you " ..
             "already press - your mount, or an opening ability. Every press " ..
             "then makes sure the tank has the square. It does nothing if they " ..
             "already have it, so it is safe to spam.",
-        "The addon watches role assignments, so the press always goes to " ..
-            "whoever is flagged as the tank. It stays out of the way in raids.",
+
+        { header = "Trying it without a group" },
+        "The General tab has a test mode that points the button at you, so " ..
+            "you can check the button, key binding and macro on your own.",
     })
 end
 

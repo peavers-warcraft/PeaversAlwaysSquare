@@ -21,6 +21,10 @@ You can also bind a key under Key Bindings > AddOns > Peavers Always Square. It 
 
 **As close to automatic as it gets:** add `/click PeaversAlwaysSquareMarkButton` as a line in a macro you already press, such as your mount or an opening ability. Every press then makes sure the tank has the square. It does nothing if they already have it, so it is safe to spam.
 
+### Test mode
+
+Want to check it works without finding a group? Open the settings (`/pas config`) and tick **Test mode** on the General tab. The marker button then stays on screen and marks you instead of a tank: left-click it, press your key binding or run the `/click` macro, and the square appears over your head. Right-click the button to clear it and try again. Test mode switches itself off when you reload or log out.
+
 ### Slash Commands
 
 - `/pas` - How to mark, and the macro to do it
