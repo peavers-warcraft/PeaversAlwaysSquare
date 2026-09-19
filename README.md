@@ -10,7 +10,6 @@ A World of Warcraft addon that marks your party's tank with a square icon in a s
 - Marks the tank with the square icon in one press: a button, a key binding or a macro
 - Prompts you with a button whenever the tank has no marker
 - Always aims at whoever holds the tank role, so there is nothing to target
-- Customizable icon selection (1-8)
 <!-- /peavers:features -->
 
 ## Usage
@@ -18,28 +17,17 @@ A World of Warcraft addon that marks your party's tank with a square icon in a s
 <!-- peavers:usage -->
 Since patch 12.0 the game no longer lets addons place raid markers on their own, so marking takes one press from you. When your party's tank has no marker a small button appears; click it and the tank is marked. Shift-drag moves the button.
 
-You can also bind a key under Key Bindings > AddOns > Peavers Always Square, or put `/click PeaversAlwaysSquareMarkButton` in a macro. Both work in combat and with the button hidden.
+You can also bind a key under Key Bindings > AddOns > Peavers Always Square. It works in combat and with the button hidden.
+
+**As close to automatic as it gets:** add `/click PeaversAlwaysSquareMarkButton` as a line in a macro you already press, such as your mount or an opening ability. Every press then makes sure the tank has the square. It does nothing if they already have it, so it is safe to spam.
 
 ### Slash Commands
 
 - `/pas` - How to mark, and the macro to do it
-- `/pas icon N` - Change icon ID (1-8)
 - `/pas reset` - Put the marker button back where it started
 - `/pas config` - Open settings
 - `/pas debug` - Toggle debug mode
 
-### Icon Reference
-
-| ID | Icon |
-|----|------|
-| 1 | Star |
-| 2 | Circle |
-| 3 | Diamond |
-| 4 | Triangle |
-| 5 | Moon |
-| 6 | Square (default) |
-| 7 | Cross |
-| 8 | Skull |
 <!-- /peavers:usage -->
 
 

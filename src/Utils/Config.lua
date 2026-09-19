@@ -11,7 +11,6 @@ local ConfigManager = PeaversCommons.ConfigManager
 local PAS_DEFAULTS = {
     enabled = true,
     debugMode = false,
-    iconId = 6,
     showButton = true,
     secureNoticeShown = false,
     DEBUG_ENABLED = false,
