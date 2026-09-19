@@ -13,7 +13,8 @@ local MarkButton = {}
 PAS.MarkButton = MarkButton
 
 local BUTTON_NAME = "PeaversAlwaysSquareMarkButton"
-local ICON_PATH = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_"
+local SQUARE = 6
+local ICON_TEXTURE = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_" .. SQUARE
 local BUTTON_SIZE = 40
 
 local button
@@ -73,7 +74,7 @@ local function NeedsMark(unit)
 	if IsSecret(mark) then
 		return false
 	end
-	return mark ~= PAS.Config.iconId
+	return mark ~= SQUARE
 end
 
 -- Said once, the first time the button appears: people upgrading from the
@@ -111,7 +112,7 @@ end
 local function ShowTooltip(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:AddLine("Mark the tank")
-	GameTooltip:AddLine("Click to give the tank the " .. PAS.iconNames[PAS.Config.iconId] .. ".", 1, 1, 1, true)
+	GameTooltip:AddLine("Click to give the tank the square.", 1, 1, 1, true)
 	GameTooltip:AddLine("Addons can no longer place markers by themselves, so this takes one press. " ..
 		"A key binding is under Key Bindings > AddOns.", 0.7, 0.7, 0.7, true)
 	GameTooltip:AddLine("Shift-drag to move.", 0.7, 0.7, 0.7, true)
@@ -135,6 +136,7 @@ function MarkButton:Create()
 	button:RegisterForClicks("AnyUp")
 	button:SetAttribute("useOnKeyDown", false)
 	button:SetAttribute("action", "set")
+	button:SetAttribute("marker", SQUARE)
 
 	local bg = button:CreateTexture(nil, "BACKGROUND")
 	bg:SetAllPoints()
@@ -143,6 +145,7 @@ function MarkButton:Create()
 	button.icon = button:CreateTexture(nil, "ARTWORK")
 	button.icon:SetPoint("TOPLEFT", 5, -5)
 	button.icon:SetPoint("BOTTOMRIGHT", -5, 5)
+	button.icon:SetTexture(ICON_TEXTURE)
 
 	local highlight = button:CreateTexture(nil, "HIGHLIGHT")
 	highlight:SetAllPoints()
@@ -189,8 +192,6 @@ function MarkButton:Refresh()
 	-- binding would mark whatever is targeted. No tank means no action at all.
 	button:SetAttribute("type", unit and "raidtarget" or nil)
 	button:SetAttribute("unit", unit)
-	button:SetAttribute("marker", PAS.Config.iconId)
-	button.icon:SetTexture(ICON_PATH .. PAS.Config.iconId)
 
 	local show = (unit ~= nil and PAS.Config.showButton and NeedsMark(unit)) or false
 	button:SetShown(show)

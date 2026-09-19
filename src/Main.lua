@@ -9,13 +9,6 @@ PAS = PAS or {}
 PAS.name = addonName
 PAS.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "1.0.0"
 
--- Icon names for reference
-local iconNames = {
-	[1] = "Star", [2] = "Circle", [3] = "Diamond", [4] = "Triangle",
-	[5] = "Moon", [6] = "Square", [7] = "Cross", [8] = "Skull"
-}
-PAS.iconNames = iconNames
-
 _G.PeaversAlwaysSquare = PAS
 
 -- Key Bindings > AddOns. The binding itself is the CLICK in Bindings.xml: the
@@ -29,7 +22,8 @@ PeaversCommons.SlashCommands:Register(addonName, "pas", {
 		-- A slash command runs as addon code, so it cannot place the mark itself
 		PAS.MarkButton:Refresh()
 		Utils.Print(PAS, "Click the marker button or press your key binding to mark the tank.")
-		print("  Macro: /click PeaversAlwaysSquareMarkButton")
+		print("  Or add this line to a macro you already press, and the tank gets marked along the way:")
+		print("  /click PeaversAlwaysSquareMarkButton")
 	end,
 	debug = function()
 		PAS.Config.debugMode = not PAS.Config.debugMode
@@ -37,27 +31,12 @@ PeaversCommons.SlashCommands:Register(addonName, "pas", {
 		PAS.Config:Save()
 		Utils.Print(PAS, "Debug mode " .. (PAS.Config.debugMode and "enabled" or "disabled"))
 	end,
-	icon = function(rest)
-		local iconId = tonumber(rest)
-		if iconId and iconId >= 1 and iconId <= 8 then
-			PAS.Config.iconId = iconId
-			PAS.Config:Save()
-			PAS.MarkButton:Refresh()
-			Utils.Print(PAS, "Using icon: " .. iconNames[iconId])
-			if InCombatLockdown() then
-				Utils.Print(PAS, "The button switches over when combat ends")
-			end
-		else
-			Utils.Print(PAS, "Invalid icon (use 1-8)")
-		end
-	end,
 	reset = function()
 		PAS.MarkButton:ResetPosition()
 	end,
 	help = function()
 		Utils.Print(PAS, "Commands:")
 		print("  /pas - How to mark the tank")
-		print("  /pas icon N - Set icon (1-8)")
 		print("  /pas reset - Put the marker button back where it started")
 		print("  /pas debug - Toggle debug mode")
 		print("  /pas config - Open settings")
