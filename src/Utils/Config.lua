@@ -12,8 +12,13 @@ local PAS_DEFAULTS = {
     enabled = true,
     debugMode = false,
     iconId = 6,
-    checkFrequency = 1.0,
+    showButton = true,
+    secureNoticeShown = false,
     DEBUG_ENABLED = false,
+    -- The marker button: below centre, clear of the character and the cast bar
+    framePoint = "CENTER",
+    frameX = 0,
+    frameY = -180,
 }
 
 -- Create the AceDB-backed config

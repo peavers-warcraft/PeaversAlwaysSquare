@@ -1,7 +1,7 @@
 ## Interface: 120001, 120005, 120007, 120100
 
 ## Title: |cff3abdf7Peavers|rAlwaysSquare
-## Notes: Automatically sets the tank's raid icon as a square when in a party
+## Notes: Marks your party's tank with a square in one press - a button, a key binding or a macro
 ## Author: Peavers
 ## Version: 1.0.60
 
@@ -21,4 +21,5 @@ src\Utils\Config.lua
 src\Utils\ConfigUI.lua
 src\Utils\Patrons.lua
 
+src\MarkButton.lua
 src\Main.lua
