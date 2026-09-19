@@ -8,14 +8,14 @@ A World of Warcraft addon that marks your party's tank with a square icon in a s
 
 <!-- peavers:features -->
 - Marks the tank with the square icon in one press: a button, a key binding or a macro
-- Prompts you with a button whenever the tank has no marker
+- Prompts you with a button when a tank joins, on every ready check, and whenever it can see the tank is unmarked
 - Always aims at whoever holds the tank role, so there is nothing to target
 <!-- /peavers:features -->
 
 ## Usage
 
 <!-- peavers:usage -->
-Since patch 12.0 the game no longer lets addons place raid markers on their own, so marking takes one press from you. When your party's tank has no marker a small button appears; click it and the tank is marked. Shift-drag moves the button.
+Since patch 12.0 the game no longer lets addons place raid markers on their own, so marking takes one press from you. A small button appears when a tank joins your party, and again on every ready check; click it and the tank is marked, or right-click to put it away. Shift-drag moves the button. Out in the world the addon can still see an unmarked tank, so the button also returns if someone removes the square. Inside instances the game hides markers from addons, which is why it asks on ready checks rather than guessing.
 
 You can also bind a key under Key Bindings > AddOns > Peavers Always Square. It works in combat and with the button hidden.
 
@@ -27,7 +27,7 @@ Want to check it works without finding a group? Open the settings (`/pas config`
 
 ### Slash Commands
 
-- `/pas` - How to mark, and the macro to do it
+- `/pas` - Bring the marker button back, and show the macro to mark with
 - `/pas reset` - Put the marker button back where it started
 - `/pas config` - Open settings
 - `/pas debug` - Toggle debug mode
