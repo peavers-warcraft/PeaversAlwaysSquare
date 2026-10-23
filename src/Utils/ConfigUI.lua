@@ -33,8 +33,7 @@ function ConfigUI:BuildGeneralPage(parentFrame)
     -- were a copy of Widgets' metrics kept by hand, and they drifted: the same
     -- 22px checkbox was advanced past by seven different values across the
     -- collection.
-    local toggle
-    toggle, y = W:CreateCheckbox(parentFrame, "Enable tank marking", {
+    _, y = W:CreateCheckbox(parentFrame, "Enable tank marking", {
         checked = PAS.Config.enabled ~= false,
         width = width,
         x = indent, y = y,
